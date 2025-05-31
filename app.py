@@ -9,7 +9,7 @@ import time
 import logging
 from dotenv import load_dotenv
 
-# Per debug
+# Debug
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('registro')
 
@@ -459,7 +459,7 @@ def studente_note():
     
     return render_template('studente_note.html', note=note)
 
-# Route
+# Rotte
 app.add_url_rule('/login', view_func=AuthController.login, methods=['GET', 'POST'])
 app.add_url_rule('/logout', view_func=AuthController.logout)
 app.add_url_rule('/docente/presenze/<int:classe_id>', view_func=DocenteController.gestisci_presenze, methods=['GET', 'POST'])
@@ -602,10 +602,10 @@ def init_db():
         db.session.rollback()
         logger.error(f"Errore durante l'inizializzazione: {str(e)}")
 
-# Sostituisci la funzione create_tables_with_retry con:
+# Crea tabella e gestisce gli errori
 def create_tables_with_retry():
-    max_retries = 5  # Aumenta a 30 tentativi
-    retry_delay = 1  # 10 secondi tra i tentativi
+    max_retries = 5  # 5 tentativi
+    retry_delay = 1  # 10 secondi tra tentativi
     
     for attempt in range(max_retries):
         try:
