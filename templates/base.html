@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Elettronico | {% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af',
+                        secondary: '#3b82f6',
+                        accent: '#f59e0b',
+                        dark: '#1f2937'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-primary text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-book-open text-2xl mr-3"></i>
+                        <span class="text-xl font-bold">Registro Elettronico</span>
+                    </div>
+                    <div class="hidden md:ml-6 md:flex md:space-x-8">
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}" class="border-transparent text-white hover:bg-blue-700 inline-flex items-center px-3 py-2 rounded-md text-sm font-medium transition">
+                            Dashboard
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    {% if current_user.is_authenticated %}
+                    <div class="ml-3 relative">
+                        <div class="flex items-center space-x-3">
+                            <span class="hidden md:block text-sm font-medium">{{ current_user.nome }} {{ current_user.cognome }}</span>
+                            <span class="bg-accent text-dark px-2 py-1 rounded-full text-xs font-bold">{{ current_user.ruolo | capitalize }}</span>
+                            <a href="{{ url_for('logout') }}" class="bg-secondary hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition">
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="bg-secondary hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition">
+                        Login
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded-md bg-{{ category }}-100 text-{{ category }}-800 border border-{{ category }}-200">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="bg-dark text-white py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-lg font-bold">Istituto Scolastico</p>
+                    <p class="text-gray-400">Via Toscana 10, 43122 Parma</p>
+                </div>
+                <div>
+                    <p class="text-gray-400">© 2025 Matthew Gasparetti. Tutti i diritti riservati.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

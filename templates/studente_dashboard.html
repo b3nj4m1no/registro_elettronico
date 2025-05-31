@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Studente{% endblock %}
+
+{% block content %}
+<!-- Sezione intestazione -->
+<div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+    <div class="p-6 bg-gradient-to-r from-primary to-secondary text-white">
+        <div class="flex items-center">
+            <div class="bg-white text-primary rounded-full p-3 mr-4">
+                <i class="fas fa-user-graduate text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold">{{ studente.nome }} {{ studente.cognome }}</h1>
+                <p class="text-blue-100">Classe: {{ studente.classe.nome if studente.classe else 'Nessuna classe' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if sospensione %}
+<div class="bg-gradient-to-r from-red-200 to-red-100 border-l-4 border-red-500 text-red-800 px-6 py-5 rounded-xl shadow flex items-center mb-8 mt-4">
+    <div class="bg-red-100 text-red-600 p-4 rounded-full mr-4 flex items-center justify-center">
+        <i class="fas fa-ban text-3xl"></i>
+    </div>
+    <div>
+        <h3 class="text-xl font-bold mb-1">Sospensione in corso</h3>
+        <p class="text-base">
+            Sei sospeso per <span class="font-semibold">{{ sospensione.giorni }} giorni</span>
+            dal <span class="font-semibold">{{ sospensione.data_inizio.strftime('%d/%m/%Y') }}</span>.<br>
+            <span class="italic">Motivo:</span> {{ sospensione.motivo }}
+        </p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Stato presenza oggi -->
+<div class="bg-white rounded-xl shadow overflow-hidden mb-8">
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <h2 class="text-xl font-bold text-gray-800">Stato Presenza Oggi</h2>
+        <p class="text-gray-600">{{ today.strftime('%d/%m/%Y') }}</p>
+    </div>
+    
+    <div class="p-6 text-center">
+        {% if presenza_oggi %}
+            {% if presenza_oggi.tipo == 'presente' %}
+                <div class="inline-block p-4 bg-green-100 text-green-800 rounded-full">
+                    <i class="fas fa-check-circle text-4xl mb-2"></i>
+                    <h3 class="text-2xl font-bold">PRESENTE</h3>
+                    <p class="text-sm">Registrato alle 8.00</p>
+                </div>
+            {% elif presenza_oggi.tipo == 'ritardo' %}
+                <div class="inline-block p-4 bg-yellow-100 text-yellow-800 rounded-full">
+                    <i class="fas fa-clock text-4xl mb-2"></i>
+                    <h3 class="text-2xl font-bold">IN RITARDO</h3>
+                    <p class="text-sm">
+                        {% if presenza_oggi.confermato %}
+                            Confermato dal vicepreside
+                        {% else %}
+                            In attesa di conferma
+                        {% endif %}
+                    </p>
+                </div>
+            {% else %}
+                <div class="inline-block p-4 bg-red-100 text-red-800 rounded-full">
+                    <i class="fas fa-times-circle text-4xl mb-2"></i>
+                    <h3 class="text-2xl font-bold">ASSENTE</h3>
+                    <p class="text-sm">
+                        {% if presenza_oggi.giustificato %}
+                            Giustificato
+                        {% else %}
+                            Non giustificato
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="inline-block p-4 bg-gray-100 text-gray-800 rounded-full">
+                <i class="fas fa-question-circle text-4xl mb-2"></i>
+                <h3 class="text-2xl font-bold">NON REGISTRATO</h3>
+                <p class="text-sm">Il docente non ha ancora registrato la tua presenza</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Riquadri statistiche -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Voti -->
+    <a href="#" class="block bg-white p-6 rounded-xl shadow hover:shadow-md transition">
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900">Voti</h3>
+                <p class="text-3xl font-bold mt-2 text-primary">{{ voti|length }}</p>
+            </div>
+            <div class="bg-blue-100 text-primary p-3 rounded-lg">
+                <i class="fas fa-graduation-cap text-xl"></i>
+            </div>
+        </div>
+    </a>
+    
+    <!-- Presenze -->
+    <div class="bg-white p-6 rounded-xl shadow">
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900">Presenze</h3>
+                <p class="text-3xl font-bold mt-2 text-green-600">{{ presenze_presenti }}</p>
+                <p class="text-gray-500 text-sm mt-1">Su {{ presenze_totali }} giorni</p>
+            </div>
+            <div class="bg-green-100 text-green-600 p-3 rounded-lg">
+                <i class="fas fa-check-circle text-xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Note -->
+    <a href="{{ url_for('studente_note') }}" class="block bg-white p-6 rounded-xl shadow hover:shadow-md transition">
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900">Note</h3>
+                <p class="text-3xl font-bold mt-2 text-amber-600">{{ note|length }}</p>
+            </div>
+            <div class="bg-amber-100 text-amber-600 p-3 rounded-lg">
+                <i class="fas fa-exclamation-triangle text-xl"></i>
+            </div>
+        </div>
+    </a>
+</div>
+
+<!-- Ultimi voti e note -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Ultimi voti -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-bold text-gray-800">Ultimi Voti</h2>
+        </div>
+        <div class="divide-y divide-gray-100">
+            {% if voti %}
+                {% for voto in voti|sort(attribute='data', reverse=true) %}
+                <div class="p-4 flex items-center">
+                    <div class="bg-blue-100 text-primary p-3 rounded-lg mr-4">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-medium">{{ voto.materia }}</p>
+                        <p class="text-gray-600 text-sm">{{ voto.data.strftime('%d/%m/%Y') }}</p>
+                    </div>
+                    <div>
+                        <span class="px-3 py-1 bg-{% if voto.valore >= 6 %}green{% else %}red{% endif %}-100 text-{% if voto.valore >= 6 %}green{% else %}red{% endif %}-800 rounded-full text-lg font-bold">
+                            {{ voto.valore }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="p-6 text-center text-gray-500">
+                    <i class="fas fa-inbox text-4xl mb-3"></i>
+                    <p>Nessun voto registrato</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Ultime note -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-bold text-gray-800">Note Recenti</h2>
+        </div>
+        <div class="divide-y divide-gray-100">
+            {% if note %}
+                {% for nota in note|sort(attribute='data', reverse=true) %}
+                <div class="p-4 flex items-start">
+                    <div class="mr-4">
+                        {% if nota.tipo == 'Comportamento' %}
+                            <span class="bg-red-100 text-red-800 p-2 rounded-full">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </span>
+                        {% else %}
+                            <span class="bg-green-100 text-green-800 p-2 rounded-full">
+                                <i class="fas fa-star"></i>
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-medium">{{ nota.tipo }}</p>
+                        <p class="text-gray-600 text-sm">{{ nota.descrizione }}</p>
+                        <p class="text-gray-500 text-xs mt-1">{{ nota.data.strftime('%d/%m/%Y') }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="p-6 text-center text-gray-500">
+                    <i class="fas fa-inbox text-4xl mb-3"></i>
+                    <p>Nessuna nota registrata</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

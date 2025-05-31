@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Registro Elettronico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen p-6">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white">
+            <h1 class="text-2xl font-bold">Pagina di Debug</h1>
+            <p class="mt-2">Stato del database e verifica dati di test</p>
+        </div>
+
+        <div class="p-6">
+            <!-- Sezione verifica utenti di test -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Utenti di Test</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {% for user in users %}
+                    <div class="border rounded-lg p-4 {% if user.exists %}bg-green-50 border-green-200{% else %}bg-red-50 border-red-200{% endif %}">
+                        <div class="flex justify-between">
+                            <div>
+                                <h3 class="font-medium">{{ user.email }}</h3>
+                                <p class="text-sm text-gray-600">{{ user.role }}</p>
+                            </div>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium {% if user.exists %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {% if user.exists %}Trovato{% else %}Mancante{% endif %}
+                            </span>
+                        </div>
+                        
+                        {% if user.exists %}
+                        <div class="mt-3 text-sm">
+                            <p><span class="font-medium">ID:</span> {{ user.id }}</p>
+                            <p><span class="font-medium">Password:</span> {{ user.password[:20] }}...</p>
+                            <p class="mt-2">
+                                <span class="font-medium">Verifica password:</span>
+                                <span class="{% if user.password_correct %}text-green-600{% else %}text-red-600{% endif %}">
+                                    {{ user.password_correct }}
+                                </span>
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sezione query diretta al database -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Query Diretta al Database</h2>
+                <pre class="bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">{{ sql_results }}</pre>
+            </div>
+
+            <!-- Sezione azioni -->
+            <div class="border-t pt-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Azioni Rapide</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <a href="/create-test-users" class="bg-blue-100 hover:bg-blue-200 text-blue-800 p-4 rounded-lg text-center">
+                        <i class="fas fa-user-plus text-xl mb-2"></i>
+                        <h3 class="font-medium">Crea Utenti di Test</h3>
+                    </a>
+                    
+                    <a href="/reset-passwords" class="bg-green-100 hover:bg-green-200 text-green-800 p-4 rounded-lg text-center">
+                        <i class="fas fa-key text-xl mb-2"></i>
+                        <h3 class="font-medium">Reimposta Password</h3>
+                    </a>
+                    
+                    <a href="/" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-4 rounded-lg text-center">
+                        <i class="fas fa-home text-xl mb-2"></i>
+                        <h3 class="font-medium">Torna alla Home</h3>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

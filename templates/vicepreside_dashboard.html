@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Vicepreside{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+    <div class="p-6 bg-gradient-to-r from-primary to-secondary text-white">
+        <div class="flex items-center">
+            <div class="bg-white text-primary rounded-full p-3 mr-4">
+                <i class="fas fa-user-tie text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold">Vicepreside {{ current_user.nome }} {{ current_user.cognome }}</h1>
+                <p class="text-blue-100">Gestione dell'istituto</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <a href="{{ url_for('conferma_ritardi') }}" class="block bg-white p-6 rounded-xl shadow hover:shadow-md transition">
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900">Ritardi da Confermare</h3>
+                <p class="text-3xl font-bold mt-2 text-amber-600">{{ ritardi_da_confermare }}</p>
+            </div>
+            <div class="bg-amber-100 text-amber-600 p-3 rounded-lg">
+                <i class="fas fa-clock text-xl"></i>
+            </div>
+        </div>
+    </a>
+    
+    <div class="bg-white p-6 rounded-xl shadow">
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900">Note Disciplinari</h3>
+                <p class="text-3xl font-bold mt-2 text-red-600">12</p>
+            </div>
+            <div class="bg-red-100 text-red-600 p-3 rounded-lg">
+                <i class="fas fa-exclamation-circle text-xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <a href="{{ url_for('sospensioni') }}" class="block bg-white p-6 rounded-xl shadow hover:shadow-md transition">
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900">Sospensioni</h3>
+                <p class="text-3xl font-bold mt-2 text-purple-600">3</p>
+            </div>
+            <div class="bg-purple-100 text-purple-600 p-3 rounded-lg">
+                <i class="fas fa-ban text-xl"></i>
+            </div>
+        </div>
+    </a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Classi -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-bold text-gray-800">Classi dell'Istituto</h2>
+        </div>
+        <div class="divide-y divide-gray-100">
+            {% for classe in classi %}
+            <div class="p-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="bg-blue-100 text-primary p-3 rounded-lg mr-4">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium">{{ classe.nome }}</p>
+                        <p class="text-gray-600 text-sm">{{ classe.studenti|length }} studenti</p>
+                    </div>
+                </div>
+                <a href="#" class="text-secondary hover:text-blue-700">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Ultime attività -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-bold text-gray-800">Attività Recenti</h2>
+        </div>
+        <div class="divide-y divide-gray-100">
+            {% for attivita in attivita_recenti %}
+            <div class="p-4">
+                <div class="flex justify-between">
+                    <p class="font-medium">{{ attivita.titolo }}</p>
+                    <span class="text-sm text-gray-500">{{ attivita.data }}</span>
+                </div>
+                <p class="text-gray-600 text-sm mt-1">{{ attivita.descrizione }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Gestione Presenze Oggi{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Registrazione Presenze</h1>
+        <p class="text-gray-600">Classe: {{ classe.nome }} - Data: {{ oggi }}</p>
+        <p class="text-sm text-red-500 mt-1">Solo per la giornata odierna</p>
+    </div>
+    <div>
+        <a href="{{ url_for('dashboard') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-medium">
+            <i class="fas fa-arrow-left mr-2"></i> Indietro
+        </a>
+    </div>
+</div>
+
+<form method="POST">
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6 bg-gray-50">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Elenco Studenti</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Seleziona lo stato di presenza per ogni studente</p>
+        </div>
+        <div class="border-t border-gray-200">
+            <ul class="divide-y divide-gray-200">
+                {% for studente in classe.studenti %}
+                <li class="px-4 py-5 sm:px-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16"></div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-medium text-gray-900">{{ studente.nome }} {{ studente.cognome }}</h4>
+                                <p class="text-gray-500">ID: {{ studente.id }}</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-4 ml-12"> <!-- Aggiunta ml-12 per spostare a destra -->
+                            {% set stato_attuale = presenze_oggi.get(studente.id, 'presente') %}
+                            {% set sospeso = False %}
+                            {% if studente.sospensioni %}
+                                {% for sosp in studente.sospensioni %}
+                                    {% set data_fine = sosp.data_inizio + timedelta(days=sosp.giorni) %}
+                                    {% if sosp.data_inizio <= oggi and oggi < data_fine %}
+                                        {% set sospeso = True %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="presenza_{{ studente.id }}" value="presente"
+                                       class="h-5 w-5 text-green-500 focus:ring-green-500"
+                                       {% if sospeso %}disabled{% endif %}
+                                       {{ 'checked' if stato_attuale == 'presente' }}>
+                                <span class="ml-2 text-gray-700">Presente</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="presenza_{{ studente.id }}" value="assente" 
+                                       class="h-5 w-5 text-red-500 focus:ring-red-500"
+                                       {% if sospeso %}disabled{% endif %}
+                                       {{ 'checked' if stato_attuale == 'assente' }}>
+                                <span class="ml-2 text-gray-700">Assente</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="presenza_{{ studente.id }}" value="ritardo" 
+                                       class="h-5 w-5 text-yellow-500 focus:ring-yellow-500"
+                                       {% if sospeso %}disabled{% endif %}
+                                       {{ 'checked' if stato_attuale == 'ritardo' }}>
+                                <span class="ml-2 text-gray-700">Ritardo</span>
+                            </label>
+                            {% if sospeso %}
+                                <span class="ml-2 text-red-500 font-semibold">Sospeso</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+    <div class="mt-6 flex justify-end">
+        <button type="submit" class="bg-primary hover:bg-blue-800 text-white px-6 py-3 rounded-md font-medium shadow-sm text-lg">
+            <i class="fas fa-save mr-2"></i> Salva Presenze Giornaliere
+        </button>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Conferma Ritardi{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Conferma Ritardi</h1>
+        <p class="text-gray-600">Ritardi in attesa di conferma</p>
+    </div>
+    <div>
+        <a href="{{ url_for('dashboard') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md font-medium">
+            <i class="fas fa-arrow-left mr-2"></i> Indietro
+        </a>
+    </div>
+</div>
+
+{% if ritardi %}
+<form method="POST">
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6 bg-gray-50">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Ritardi da Confermare</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Seleziona i ritardi da confermare</p>
+        </div>
+        <div class="border-t border-gray-200">
+            <ul class="divide-y divide-gray-200">
+                {% for ritardo in ritardi %}
+                <li class="px-4 py-5 sm:px-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16"></div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-medium text-gray-900">{{ ritardo.studente.nome }} {{ ritardo.studente.cognome }}</h4>
+                                <p class="text-gray-500">
+                                    Classe: {{ ritardo.studente.classe_ref.nome }} - 
+                                    Data: {{ ritardo.data.strftime('%d/%m/%Y') }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center ml-12">
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="conferma_{{ ritardo.id }}" class="h-5 w-5 text-primary focus:ring-primary rounded">
+                                <span class="ml-2 text-gray-700">Conferma</span>
+                            </label>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+    <div class="mt-6 flex justify-end">
+        <button type="button" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-2 rounded-md font-medium mr-4">
+            Annulla
+        </button>
+        <button type="submit" class="bg-primary hover:bg-blue-800 text-white px-6 py-2 rounded-md font-medium shadow-sm">
+            <i class="fas fa-check-circle mr-2"></i> Conferma Selezionati
+        </button>
+    </div>
+</form>
+{% else %}
+<div class="bg-white rounded-xl shadow overflow-hidden">
+    <div class="p-8 text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+            <i class="fas fa-check text-green-600 text-xl"></i>
+        </div>
+        <h3 class="mt-4 text-lg font-medium text-gray-900">Nessun ritardo da confermare</h3>
+        <div class="mt-6">
+            <a href="{{ url_for('dashboard') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-blue-700">
+                <i class="fas fa-home mr-2"></i> Torna alla Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
