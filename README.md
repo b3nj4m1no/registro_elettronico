@@ -54,7 +54,7 @@ Il Registro Elettronico Scolastico è una piattaforma web che consente la gestio
 ### 1. Clona il repository
 
 ```bash
-git clone https://github.com/tuo-utente/registro_elettronico.git
+git clone https://github.com/b3nj4m1no/registro_elettronico.git
 cd registro_elettronico
 ```
 
